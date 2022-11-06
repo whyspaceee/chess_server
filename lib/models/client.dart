@@ -7,18 +7,18 @@ import 'package:chess_socket_server/models/board.dart';
 import 'package:chess_socket_server/models/message.dart';
 
 class Client {
-  final Socket _socket;
+  final Socket socket;
   final Function(Message, Client) messageHandler;
   late String _address;
   late int _port;
   late Board board;
   late int gameNumber;
 
-  Client(this._socket, this.messageHandler) {
-    _address = _socket.remoteAddress.address;
-    _port = _socket.remotePort;
+  Client(this.socket, this.messageHandler) {
+    _address = socket.remoteAddress.address;
+    _port = socket.remotePort;
 
-    _socket.listen(jsonParser, onDone: finishedHandler, onError: errorHandler);
+    socket.listen(jsonParser, onDone: finishedHandler, onError: errorHandler);
   }
 
   void jsonParser(Uint8List data) {
@@ -30,11 +30,11 @@ class Client {
 
   void errorHandler(error) {
     print('$_address:$_port Error: $error');
-    _socket.close();
+    socket.close();
   }
 
   void finishedHandler() {
     print('$_address:$_port Disconnected');
-    _socket.close();
+    socket.close();
   }
 }

@@ -30,13 +30,30 @@ class Server {
       client.board = newBoard;
       client.gameNumber = message.gameNumber;
       boards.add(newBoard);
+      print(newBoard.fenState + newBoard.gameNumber.toString());
     } else if (message.type == MessageType.join) {
       print('Join game ${message.gameNumber}');
       client.board = boards
           .firstWhere((element) => element.gameNumber == message.gameNumber);
       client.gameNumber = message.gameNumber;
+      for (var c in clients) {
+        if (c != client) {
+          c.socket.write(Message(
+              'rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 1 2',
+              MessageType.join,
+              message.gameNumber,
+              message.isWhite));
+        }
+      }
     } else if (message.type == MessageType.move) {
-      print('Move piece');
+      print('Move piece ${message.message}');
+      client.board.fenState = message.message;
+      for (var c in clients) {
+        if (c != client && c.gameNumber == message.gameNumber) {
+          c.socket.write(Message(message.message, MessageType.move,
+              message.gameNumber, !message.isWhite));
+        }
+      }
     } else if (message.type == MessageType.quit) {
       print('Quit game');
     }
