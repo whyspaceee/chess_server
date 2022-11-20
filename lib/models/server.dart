@@ -25,6 +25,12 @@ class Server {
 
   void messageHandler(Message message, Client client) {
     if (message.type == MessageType.create) {
+      if (client.gameNumber == message.gameNumber) {
+        print('already in game');
+        client.socket.write(Message(client.board.fenState, MessageType.move,
+            client.gameNumber, message.isWhite));
+        return;
+      }
       print('Create game');
       final newBoard = Board(message.message, message.gameNumber);
       client.board = newBoard;
@@ -32,6 +38,12 @@ class Server {
       boards.add(newBoard);
       print(newBoard.fenState + newBoard.gameNumber.toString());
     } else if (message.type == MessageType.join) {
+      if (client.gameNumber == message.gameNumber) {
+        print('Already in game');
+        client.socket.write(Message(client.board.fenState, MessageType.move,
+            client.gameNumber, message.isWhite));
+        return;
+      }
       print('Join game ${message.gameNumber}');
       client.board = boards
           .firstWhere((element) => element.gameNumber == message.gameNumber);
@@ -56,6 +68,9 @@ class Server {
       }
     } else if (message.type == MessageType.quit) {
       print('Quit game');
+      boards.removeWhere((element) => element.gameNumber == message.gameNumber);
+      clients
+          .removeWhere((element) => element.gameNumber == message.gameNumber);
     }
   }
 }
