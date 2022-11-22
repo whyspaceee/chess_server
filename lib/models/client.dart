@@ -11,8 +11,8 @@ class Client {
   final Function(Message, Client) messageHandler;
   late String _address;
   late int _port;
-  late Board board;
-  late int gameNumber;
+  Board? board;
+  int? gameNumber;
 
   Client(this.socket, this.messageHandler) {
     _address = socket.remoteAddress.address;

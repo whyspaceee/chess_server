@@ -27,8 +27,8 @@ class Server {
     if (message.type == MessageType.create) {
       if (client.gameNumber == message.gameNumber) {
         print('already in game');
-        client.socket.write(Message(client.board.fenState, MessageType.move,
-            client.gameNumber, message.isWhite));
+        client.socket.write(Message(client.board!.fenState, MessageType.move,
+            client.gameNumber!, message.isWhite));
         return;
       }
       print('Create game');
@@ -40,8 +40,8 @@ class Server {
     } else if (message.type == MessageType.join) {
       if (client.gameNumber == message.gameNumber) {
         print('Already in game');
-        client.socket.write(Message(client.board.fenState, MessageType.move,
-            client.gameNumber, message.isWhite));
+        client.socket.write(Message(client.board!.fenState, MessageType.move,
+            client.gameNumber!, message.isWhite));
         return;
       }
       print('Join game ${message.gameNumber}');
@@ -59,7 +59,7 @@ class Server {
       }
     } else if (message.type == MessageType.move) {
       print('Move piece ${message.message}');
-      client.board.fenState = message.message;
+      client.board!.fenState = message.message;
       for (var c in clients) {
         if (c != client && c.gameNumber == message.gameNumber) {
           c.socket.write(Message(message.message, MessageType.move,
